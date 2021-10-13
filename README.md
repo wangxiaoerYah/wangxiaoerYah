@@ -1,3 +1,6 @@
+
+
+<script type="text/javascript" src="/js/src/main.js"></script>
 ### Hi there 👋
 
 <!--
