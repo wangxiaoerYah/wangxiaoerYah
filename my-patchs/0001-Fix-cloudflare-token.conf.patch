@@ -1,0 +1,30 @@
+From e9932259ae468c187202f52dbeaa6933e141341d Mon Sep 17 00:00:00 2001
+From: John <48443038+wangxiaoerYah@users.noreply.github.com>
+Date: Sat, 27 Apr 2024 11:03:26 +0800
+Subject: [PATCH] Fix cloudflare-token.conf
+
+fix on nixos bug:
+uses unban error:
+ `id for ip cannot be found using target`
+
+The reason why the error occurs on nixos is that the special operating environment of nixos causes the commands before and after it to be executed separately. Subsequent commands do not inherit the previous command. Merging it solves the problem without affecting other distributions.
+---
+ config/action.d/cloudflare-token.conf | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/config/action.d/cloudflare-token.conf b/config/action.d/cloudflare-token.conf
+index ff5f5c4e..b21c0d44 100644
+--- a/config/action.d/cloudflare-token.conf
++++ b/config/action.d/cloudflare-token.conf
+@@ -55,7 +55,7 @@ actionunban = id=$(curl -s -X GET "<_cf_api_url>" \
+               <_cf_api_prms> \
+                   | awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'id'\042/){print $(i+1)}}}' \
+                   | tr -d ' "' \
+-                  | head -n 1)
++                  | head -n 1); \
+               if [ -z "$id" ]; then echo "<name>: id for <ip> cannot be found using target <cftarget>"; exit 0; fi; \
+               curl -s -X DELETE "<_cf_api_url>/$id" \
+                   <_cf_api_prms> \
+-- 
+2.44.0
+
